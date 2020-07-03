@@ -1,6 +1,8 @@
 package io.nd.channel;
 
-import java.util.concurrent.Future;
+import io.nd.util.concurrent.Future;
+import io.nd.util.concurrent.GenericFutureListener;
+
 
 /**
  * @author ：sunjx
@@ -8,4 +10,31 @@ import java.util.concurrent.Future;
  * @description：
  */
 public interface ChannelFuture extends Future<Void> {
+
+    Channel channel();
+
+    @Override
+    ChannelFuture addListener(GenericFutureListener<? extends Future<? super Void>> listener);
+
+    @Override
+    ChannelFuture addListeners(GenericFutureListener<? extends Future<? super Void>>... listeners);
+
+    @Override
+    ChannelFuture removeListener(GenericFutureListener<? extends Future<? super Void>> listener);
+
+    @Override
+    ChannelFuture removeListeners(GenericFutureListener<? extends Future<? super Void>>... listeners);
+
+    @Override
+    ChannelFuture sync() throws InterruptedException;
+
+    @Override
+    ChannelFuture syncUninterruptibly();
+
+    @Override
+    ChannelFuture await() throws InterruptedException;
+
+    @Override
+    ChannelFuture awaitUninterruptibly();
+
 }

@@ -8,7 +8,7 @@ import io.nd.util.DefaultAttributeMap;
  * @description：
  */
 public abstract class AbstractChannel extends DefaultAttributeMap implements Channel {
-//
+
 //    private final ChannelId id;
 //    private final Channel parent;
 
