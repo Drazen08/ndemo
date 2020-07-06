@@ -10,8 +10,44 @@ import java.security.PrivilegedAction;
  */
 public class SystemPropertyUtil {
 
+    private SystemPropertyUtil() {
+    }
+
     public static String get(String key) {
         return null;
+    }
+
+    public static int getInt(String key, int def) {
+        String value = get(key);
+        if (value == null) {
+            return def;
+        }
+        value = value.trim();
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return def;
+    }
+
+    public static boolean getBoolean(String key, boolean def) {
+        String v = get(key);
+        if (v == null) {
+            return def;
+        }
+        v = v.trim().toLowerCase();
+        if (v.isEmpty()) {
+            return def;
+        }
+        if ("true".equals(v) || "yes".equals(v) || "1".equals(v)) {
+            return true;
+        }
+        if ("false".equals(v) || "no".equals(v) || "0".equals(v)) {
+            return false;
+        }
+
+        return def;
     }
 
 
@@ -44,10 +80,6 @@ public class SystemPropertyUtil {
         }
         return def;
     }
-
-
-
-
 
 
 }

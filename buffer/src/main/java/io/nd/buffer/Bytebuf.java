@@ -1,7 +1,6 @@
 package io.nd.buffer;
 
 import io.nd.util.ReferenceCounted;
-import org.omg.CORBA.portable.ValueBase;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
+import java.nio.charset.Charset;
 
 /**
  * @author ：sunjx
@@ -341,13 +341,69 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
 
     public abstract int forEachByteDesc(int index, int length, ByteBufProcessor processor);
 
+    /**
+     * 复制 bytebuf 的可读数组
+     *
+     * @return
+     */
     public abstract Bytebuf copy();
 
-    public abstract Bytebuf copy(int index,int length);
+    public abstract Bytebuf copy(int index, int length);
 
     public abstract Bytebuf slice();
 
-    public abstract Bytebuf slice(int index,int length);
+    public abstract Bytebuf slice(int index, int length);
+
+    public abstract Bytebuf duplicate();
+
+    public abstract int nioBufferCount();
+
+    public abstract ByteBuffer nioBuffer();
+
+    public abstract ByteBuffer nioBuffer(int index, int length);
+
+    public abstract ByteBuffer internalNioBuffer(int index, int length);
+
+    public abstract ByteBuffer[] nioBuffers(int index, int length);
+
+    public abstract boolean hasArray();
+
+    public abstract byte[] array();
+
+    public abstract int arrayOffset();
+
+    public abstract boolean hasMemoryAddress();
+
+    /**
+     * 返回内存地址
+     *
+     * @return
+     */
+    public abstract long memoryAddress();
+
+    public abstract String toString(Charset charset);
+
+    public abstract String toString(int index, int length, Charset charset);
+
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    @Override
+    public abstract int compareTo(Bytebuf buffer);
+
+
+    @Override
+    public abstract String toString();
+
+    @Override
+    public abstract Bytebuf retain(int increment);
+
+    @Override
+    public abstract Bytebuf retain();
+
 
 
 
