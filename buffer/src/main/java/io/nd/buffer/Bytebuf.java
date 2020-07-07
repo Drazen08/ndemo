@@ -38,7 +38,7 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
 
     public abstract ByteBufAllocator allocator();
 
-    public abstract ByteOrder byteOrder();
+    public abstract ByteOrder order();
 
     public abstract Bytebuf order(ByteOrder endianness);
 
@@ -46,19 +46,20 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
 
     public abstract boolean isDirect();
 
-    public abstract int readIndex();
+    public abstract int readerIndex();
 
     /**
      * 设置读游标
      *
-     * @param readIndex
+     * @param readerIndex
      * @return
      */
-    public abstract Bytebuf readIndex(int readIndex);
+    public abstract Bytebuf readerIndex(int readerIndex);
 
-    public abstract int writeIndex();
 
-    public abstract Bytebuf writeIndex(int writeIndex);
+    public abstract int writerIndex();
+
+    public abstract Bytebuf writerIndex(int writeIndex);
 
     public abstract Bytebuf setIndex(int readIndex, int writeIndex);
 
@@ -216,6 +217,8 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
     public abstract Bytebuf setBytes(int index, Bytebuf src);
 
     public abstract Bytebuf setBytes(int index, Bytebuf src, int length);
+
+    public abstract Bytebuf setBytes(int index, Bytebuf src, int srcIndex,int length);
 
 
     public abstract Bytebuf setBytes(int index, byte[] src);
@@ -403,8 +406,6 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
 
     @Override
     public abstract Bytebuf retain();
-
-
 
 
 }
