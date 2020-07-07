@@ -1,6 +1,9 @@
 package io.nd.buffer;
 
 import io.nd.util.IllegalReferenceCountException;
+import io.nd.util.internal.MathUtil;
+
+import java.nio.ByteOrder;
 
 /**
  * @author ：sunjx
@@ -200,6 +203,48 @@ public abstract class AbstractBytebuf extends Bytebuf {
         return this;
     }
 
+    @Override
+    public Bytebuf order(ByteOrder endianness) {
+        if (endianness == null) {
+            throw new NullPointerException("ByteOrder");
+        }
+        if (endianness == order()) {
+            return this;
+        }
+        SwappedBytebuf swappedBytebuf = this.swappedBytebuf;
+        if (swappedBytebuf == null) {
+            swappedBytebuf = this.swappedBytebuf = newSwappedByteBuf();
+        }
+
+        return swappedBytebuf;
+    }
+
+    @Override
+    public byte getByte(int index) {
+        checkIndex(index);
+        return _getByte(index);
+    }
+
+    protected abstract byte _getByte(int index);
+
+    @Override
+    public boolean getBoolean(int index) {
+        return getByte(index) != 0;
+    }
+
+    @Override
+    public short getShort(int index) {
+        checkIndex(index);
+        return _getShort(index);
+    }
+
+    protected abstract short _getShort(int index);
+
+    @Override
+    public short getUnsignedByte(int index) {
+        return (short) (getByte(index) & 0xFF);
+    }
+
     /**
      * 每次对buffer 数据释放前调用，如果相对的引用计数为0 那么认为有错
      */
@@ -288,6 +333,24 @@ public abstract class AbstractBytebuf extends Bytebuf {
         System.out.println(i);
     }
 
+    protected SwappedBytebuf newSwappedByteBuf() {
+        return new SwappedBytebuf(this);
+    }
 
+    protected final void checkIndex(int index) {
+        checkIndex(index, 1);
+    }
+
+    protected final void checkIndex(int index, int fieldLength) {
+        ensureAccessible();
+        checkIndex0(index, fieldLength);
+    }
+
+    final void checkIndex0(int index, int fieldLength) {
+        if (MathUtil.isOutOfBounds(index, fieldLength, capacity())) {
+            throw new IndexOutOfBoundsException(String.format(
+                    "index: %d, length: %d (expected: range(0, %d))", index, fieldLength, capacity()));
+        }
+    }
 }
 
