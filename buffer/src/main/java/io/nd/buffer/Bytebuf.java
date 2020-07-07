@@ -26,6 +26,7 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
 
     /**
      * 调整bytebuf 的字节长度至指定长度 {@param newCapacity}
+     * 这个是实际的扩充内存的方法
      */
     public abstract int capacity(int newCapacity);
 
@@ -129,6 +130,14 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
      */
     public abstract Bytebuf discardSomeReadBytes();
 
+    /**
+     * 检查是否有足够可写空间 (writeableBytes)
+     *
+     * @param minWriteableBytes
+     * @return bytebuf
+     * @throws IllegalArgumentException
+     */
+    public abstract Bytebuf ensureWritable(int minWriteableBytes);
 
     public abstract boolean getBoolean(int index);
 
@@ -218,7 +227,7 @@ public abstract class Bytebuf implements ReferenceCounted, Comparable<Bytebuf> {
 
     public abstract Bytebuf setBytes(int index, Bytebuf src, int length);
 
-    public abstract Bytebuf setBytes(int index, Bytebuf src, int srcIndex,int length);
+    public abstract Bytebuf setBytes(int index, Bytebuf src, int srcIndex, int length);
 
 
     public abstract Bytebuf setBytes(int index, byte[] src);

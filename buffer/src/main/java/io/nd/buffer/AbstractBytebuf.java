@@ -167,6 +167,39 @@ public abstract class AbstractBytebuf extends Bytebuf {
         return this;
     }
 
+
+    @Override
+    public Bytebuf discardSomeReadBytes() {
+        ensureAccessible();
+        if (readerIndex == 0) {
+            return this;
+        }
+
+        if (readerIndex == writerIndex) {
+            adjustMarkers(readerIndex);
+            writerIndex = readerIndex = 0;
+            return this;
+        }
+
+        if (readerIndex >= capacity() >>> 1) {
+            setBytes(0, this, readerIndex, writerIndex - readerIndex);
+            writerIndex -= readerIndex;
+            adjustMarkers(readerIndex);
+            readerIndex = 0;
+        }
+
+        return this;
+    }
+
+    @Override
+    public Bytebuf ensureWritable(int minWriteableBytes) {
+        if (minWriteableBytes < 0) {
+            throw new IllegalArgumentException(String.format("minWriteableBytes %d(expected >=0)", minWriteableBytes));
+        }
+        ensureWritable0(minWriteableBytes);
+        return this;
+    }
+
     /**
      * 每次对buffer 数据释放前调用，如果相对的引用计数为0 那么认为有错
      */
@@ -178,6 +211,7 @@ public abstract class AbstractBytebuf extends Bytebuf {
 
     /**
      * 释放（缩减）部分长度的buffer
+     * 并标记上一次的读写游标
      */
     protected final void adjustMarkers(int decrement) {
         int markedReadIndex = this.markedReaderIndex;
@@ -199,6 +233,61 @@ public abstract class AbstractBytebuf extends Bytebuf {
         this.readerIndex = readerIndex;
         this.writerIndex = writerIndex;
     }
+
+    final void ensureWritable0(int minWritableBytes) {
+        ensureAccessible();
+        if (minWritableBytes <= writeableBytes()) {
+            return;
+        }
+
+        if (minWritableBytes > maxCapacity - writerIndex) {
+            throw new IndexOutOfBoundsException(String.format(
+                    "writerIndex(%d) + minWritableBytes(%d) exceeds maxCapacity(%d): %s",
+                    writerIndex, minWritableBytes, maxCapacity, this));
+        }
+        int newCapacity = calculateNewCapacity(writerIndex + minWritableBytes);
+        capacity(newCapacity);
+    }
+
+    /**
+     * buffer 扩容
+     *
+     * @param minNewCapacity
+     * @return
+     */
+    private int calculateNewCapacity(int minNewCapacity) {
+        final int maxCapacity = this.maxCapacity;
+        final int threshold   = 1048576 * 4;
+        if (minNewCapacity == threshold) {
+            return threshold;
+        }
+
+        // 当扩容大小大于单次扩内存时，仅扩大定量空间 （threshold）
+        if (minNewCapacity > threshold) {
+            int newCapacity = minNewCapacity / threshold * threshold;
+            if (newCapacity > maxCapacity - threshold) {
+                newCapacity = maxCapacity;
+            } else {
+                newCapacity += threshold;
+            }
+            return newCapacity;
+        }
+        int newCapacity = 64;
+        while (newCapacity < minNewCapacity) {
+            // 乘2
+            newCapacity <<= 1;
+        }
+        return Math.min(newCapacity, maxCapacity);
+    }
+
+
+    public static void main(String[] args) {
+        int i = 64;
+        System.out.println(64 << 1);
+        System.out.println(i <<= 1);
+        System.out.println(i);
+    }
+
 
 }
 

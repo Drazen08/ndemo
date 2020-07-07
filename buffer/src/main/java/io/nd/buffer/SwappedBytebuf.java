@@ -176,6 +176,11 @@ public class SwappedBytebuf extends Bytebuf {
     }
 
     @Override
+    public Bytebuf ensureWritable(int minWriteableBytes) {
+        return null;
+    }
+
+    @Override
     public boolean getBoolean(int index) {
         return false;
     }
